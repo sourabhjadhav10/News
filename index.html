@@ -52,12 +52,11 @@ function render(){renderFilters();grid.className='grid '+(cols===2?'two':cols===
 search.oninput=render;$('searchToggle').onclick=()=>{let open=search.classList.toggle('open');$('searchToggle').setAttribute('aria-expanded',String(open));$('searchToggle').setAttribute('aria-label',open?'Close search':'Open search');if(open)search.focus();else{search.value='';render()}};search.onkeydown=e=>{if(e.key==='Escape'){$('searchToggle').click()}};$('favOnly').onclick=()=>{favOnly=!favOnly;$('favOnly').textContent=favOnly?'★ Favourites':'☆ Favourites';render()};document.querySelectorAll('[data-cols]').forEach(b=>b.onclick=()=>{cols=Number(b.dataset.cols);save();render()});if(location.protocol==='file:') $('localWarning').style.display='block'; render();
 function card(c){
 let el=document.createElement('article'),src=embed(c.embed||idFrom(c.live)),isFav=favorites.includes(c.id);
-el.className='card';el.draggable=true;
+el.className='card';
 let player=src?`<iframe src="${src}" title="${c.name}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen></iframe>`:`<div class="offline"><div><strong>Live stream unavailable</strong><span>This channel does not currently provide an embeddable YouTube stream.</span></div></div>`;
-el.innerHTML=`<div class="cardhead"><div class="logo">${c.abbr||'TV'}</div><div class="meta"><div class="name"></div><div class="sub">${c.cat} &middot; drag to reorder</div></div><span class="badge ${src?'ready':''}">${src?'LIVE':'OFFLINE'}</span><button class="star ${isFav?'on':''}" title="Favourite">&#9733;</button></div><div class="frame">${player}</div>`;
+el.innerHTML=`<div class="cardhead"><div class="logo">${c.abbr||'TV'}</div><div class="meta"><div class="name"></div><div class="sub">${c.cat}</div></div><span class="badge ${src?'ready':''}">${src?'LIVE':'OFFLINE'}</span><button class="star ${isFav?'on':''}" title="Favourite">&#9733;</button></div><div class="frame">${player}</div>`;
 el.querySelector('.name').textContent=c.name;
 el.querySelector('.star').onclick=()=>{favorites.includes(c.id)?favorites=favorites.filter(x=>x!==c.id):favorites.push(c.id);save();render()};
-el.addEventListener('dragstart',()=>{el.classList.add('dragging');window.dragId=c.id});el.addEventListener('dragend',()=>{el.classList.remove('dragging');window.dragId=null});el.addEventListener('dragover',e=>e.preventDefault());el.addEventListener('drop',e=>{e.preventDefault();if(!window.dragId||window.dragId===c.id)return;let a=channels.findIndex(x=>x.id===window.dragId),b=channels.findIndex(x=>x.id===c.id),item=channels.splice(a,1)[0];channels.splice(b,0,item);save();render()});
 return el
 };
 render();
